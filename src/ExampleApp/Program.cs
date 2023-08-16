@@ -1,6 +1,4 @@
-﻿#define USE_NETWORK_TIME
-
-using KT.Sandbox.InternalClock;
+﻿using KT.Sandbox.InternalClock;
 using KT.Sandbox.InternalClock.Extensibility;
 
 namespace ExampleApp
@@ -13,7 +11,7 @@ namespace ExampleApp
     /// where the application may not rely on system time.
     /// 
     /// note: 
-    ///     .net 8 prerelease has additional features around an depdending on
+    ///     .net 8 prerelease has additional features around an depending on
     ///     system time with an ITimeProvider implementation.  will be
     ///     worth looking into.
     /// </summary>
@@ -24,26 +22,15 @@ namespace ExampleApp
 
         /// <summary>
         /// Main entry-point of the application.
-        /// 
-        /// Comment out USE_NETWORK_TIME preprocessor directive (line 1) to
-        /// set your own custom time
         /// </summary>
-        /// <param name="args"></param>
         /// <returns></returns>
-        static async Task Main(string[] args)
+        private static async Task Main()
         {
-#if USE_NETWORK_TIME
-            //to demo use of network time:
-            DateTimeOffset? myTime = null;                                                                  //clock will use ntp to get time if this is null
-#else
-            //to demo a custom time:
-            DateTimeOffset? myTime = new DateTimeOffset(3099, 7, 4, 23, 59, 59, TimeSpan.FromHours(-7));    //--July 4th, 3099 at 11:59:59pm in Phoenix -07:00
-#endif
-
             //set up a clock
             IClock appClock = KTClock.Instance;
-            appClock.Initialize(myTime);
-
+            appClock.Initialize();
+            //appClock.Initialize(new DateTimeOffset(3099, 7, 4, 23, 59, 59, TimeSpan.FromHours(-7))); //--July 4th, 3099 at 11:59:59pm in Phoenix -07:00
+            
             //report the current time
             Console.WriteLine("at the tone, it is: {0:MM/dd/yyyy hh:mm:ss.fff tt}", appClock.Now);
 

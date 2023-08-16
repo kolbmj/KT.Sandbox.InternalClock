@@ -23,7 +23,7 @@ namespace KT.Sandbox.InternalClock
     internal struct NetworkTimeClient
     {
         //constants
-        private const Int32 DNS_RESOLVE_TIMEOUT_MS = 100;                           //number of ms to wait before failing a dns entry lookup
+        private const Int32 DNS_RESOLVE_TIMEOUT_MS = 150;                           //number of ms to wait before failing a dns entry lookup
         private const Int32 NTP_PORT_NUMBER = 123;                                  //default ntp port number
         private const Int32 SOCKET_RECEIVE_TIMEOUT_MS = 500;                        //how long to wait before moving onto the next
         private const String NTP_SERVERS = "us.pool.ntp.org,time.windows.com";      //csv list of available time servers
@@ -51,62 +51,6 @@ namespace KT.Sandbox.InternalClock
             throw new NetworkTimeException($"Unable to retrieve a valid response from any of the following servers: '{ NTP_SERVERS }'.");            
         }
 
-        #region old version
-
-        //public static DateTimeOffset GetNetworkTime()
-        //{
-        //    //default time server
-        //    const string ntp_server = "us.pool.ntp.org";
-
-        //    // ntp message size - 16 bytes of the digest (RFC 2030)
-        //    var ntpData = new byte[48];
-
-        //    //setting the leap indicator, version Number and mode values
-        //    ntpData[0] = 0x1B; //li = 0 (no warning), vn = 3 (IPv4 only), mode = 3 (Client Mode)
-
-        //    var addresses = Dns.GetHostEntry(ntp_server).AddressList;
-
-        //    //the udp port number assigned to ntp is 123
-        //    var ipEndPoint = new IPEndPoint(addresses[0], 123);
-
-        //    //ntp uses udp
-        //    using (Socket socket = new(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp))
-        //    {
-        //        socket.Connect(ipEndPoint);
-
-        //        //stops code hang if ntp is blocked
-        //        socket.ReceiveTimeout = 3_000;
-
-        //        socket.Send(ntpData);
-        //        socket.Receive(ntpData);
-        //        socket.Close();
-        //    }
-
-        //    //offset to get to the "transmit timestamp" field (time at which the reply 
-        //    //departed the server for the client, in 64-bit timestamp format)
-        //    const byte serverReplyTime = 40;
-
-        //    //get the seconds part
-        //    ulong intPart = BitConverter.ToUInt32(ntpData, serverReplyTime);
-
-        //    //get the seconds fraction
-        //    ulong fractPart = BitConverter.ToUInt32(ntpData, serverReplyTime + 4);
-
-        //    //convert From big-endian to little-endian
-        //    intPart = SwapEndianness(intPart);
-        //    fractPart = SwapEndianness(fractPart);
-
-        //    ulong milliseconds = (intPart * 1000) + ((fractPart * 1000) / 0x100000000L);
-
-        //    //**UTC** time
-        //    DateTime networkTime = (new DateTime(1900, 1, 1, 0, 0, 0, DateTimeKind.Utc)).AddMilliseconds((long)milliseconds);
-
-        //    //return networkDateTime.ToLocalTime();
-        //    return new DateTimeOffset(networkTime, TimeZoneInfo.Utc.GetUtcOffset(networkTime));
-        //}
-
-        #endregion old version
-
         /// <summary>
         /// Flip endianness of an unsigned 64 bit integer
         /// 
@@ -126,7 +70,7 @@ namespace KT.Sandbox.InternalClock
 
         /// <summary>
         /// Return a unique list the ip addresses based on the dns entries 
-        /// from a comma-separated list of fully qualified domain names
+        /// from a comma-separated list of domain names
         /// </summary>
         /// <param name="csvDomainNames"></param>
         /// <returns></returns>
