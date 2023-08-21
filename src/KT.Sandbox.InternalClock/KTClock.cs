@@ -11,7 +11,7 @@ namespace KT.Sandbox.InternalClock
     {
         //fields
         private Boolean _isInitialized = false;
-        private static KTClock _instance = new();
+        private static readonly KTClock _instance = new();
         private DateTimeOffset _genesis = DateTimeOffset.MinValue;
         private readonly DateTime _systemStart = DateTime.Now;
 
